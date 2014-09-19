@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Strings for tab headers-->
+    <string name="contact_creator">Добавить</string>
+    <string name="contacts">Контакты</string>
+
+    <!--Strings for creator tab-->
+    <string name="txt_name">Имя</string>
+    <string name="txt_phone">Номет телефона</string>
+    <string name="txt_email">Почтовый ящик</string>
+    <string name="txt_address">Почтовый адрес</string>
+    <string name="add_btn">Добавить контакт</string>
+    <string name="creator_header">Создание контактов</string>
+    <string name="profile_image">Фото профиля</string>
+
+    <!--Strings for contact list tab-->
+    <string name="list_header">Мои контакты</string>
+
+    <!--Strings for adding toast popup message-->
+    <string name="added_completely"> был(а) добавлен(а) в список контактов</string>
+    <string name="already_exist"> уже существует в списке контактов</string>
+</resources>
