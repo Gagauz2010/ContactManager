@@ -1,15 +1,19 @@
 package univercity.learn;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,10 +25,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 
 public class Main extends Activity {
+
+    private static final int EDIT = 0, CALL = 1, SMS = 2, EMAIL = 3, MAP = 4, DELETE = 5;
 
     List<Contact> Contacts = new ArrayList<Contact>();
 
@@ -38,6 +43,9 @@ public class Main extends Activity {
 
     private static final String EMPTY_STRING = "";
 
+    int longClickedItemIndex;
+    ArrayAdapter<Contact> contactAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +57,8 @@ public class Main extends Activity {
         addressTxt = (EditText) findViewById(R.id.txtAddress);
         contactListView = (ListView) findViewById(R.id.listView);
         contactImageImgView = (ImageView) findViewById(R.id.imgViewContactImage);
+
+
 
         dbHandler = new DatabaseHandler(getApplicationContext());
 
@@ -77,6 +87,7 @@ public class Main extends Activity {
                 if (contactExists(contact)) {
                     dbHandler.createContact(contact);
                     Contacts.add(contact);
+                    contactAdapter.notifyDataSetChanged();
                     Toast.makeText(getApplicationContext(), nameTxt.getText().toString() + R.string.added_completely, Toast.LENGTH_SHORT).show();
 
                     nameTxt.setText(EMPTY_STRING);
@@ -124,23 +135,23 @@ public class Main extends Activity {
             }
         });
 
-        /*contactListView.setOnClickListener(new View.OnClickListener() {
+        registerForContextMenu(contactListView);
+        contactListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onClick(View v) {
-                //TODO: Добавить PopupMenu (Изменить / Позвонить / Написать СМС / Написать письмо / Найти на карте / Удалить) если такие поля заполнены
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                longClickedItemIndex = position;
+                return false;
             }
-        });*/
+        });
     }
 
     private boolean contactExists(Contact contact){
         String name = contact.getName();
-        int contactCount = Contacts.size();
 
-        for (int i = 0; i<contactCount; i++){
-            if (name.compareToIgnoreCase(Contacts.get(i).getName()) == 0)
+        for (univercity.learn.Contact Contact : Contacts) {
+            if (name.compareToIgnoreCase(Contact.getName()) == 0)
                 return true;
         }
-
         return false;
     }
 
@@ -157,8 +168,8 @@ public class Main extends Activity {
     }
 
     private void populateList(){
-        ArrayAdapter<Contact> adapter = new ContactListAdapter();
-        contactListView.setAdapter(adapter);
+        contactAdapter = new ContactListAdapter();
+        contactListView.setAdapter(contactAdapter);
     }
 
     private class ContactListAdapter extends ArrayAdapter<Contact>{
@@ -186,6 +197,63 @@ public class Main extends Activity {
 
             return view;
         }
+    }
+
+    public  void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo){
+        super.onCreateContextMenu(menu, view, menuInfo);
+
+        //menu.setHeaderIcon(R.drawable.edit_icon);
+        menu.setHeaderTitle("Опции");
+        menu.add(Menu.NONE, EDIT, menu.NONE, R.string.menu_edit);
+        menu.add(Menu.NONE, CALL, menu.NONE, R.string.menu_call);
+        menu.add(Menu.NONE, SMS, menu.NONE, R.string.menu_sms);
+        menu.add(Menu.NONE, EMAIL, menu.NONE, R.string.menu_email);
+        menu.add(Menu.NONE, MAP, menu.NONE, R.string.menu_map);
+        menu.add(Menu.NONE, DELETE, menu.NONE, R.string.menu_delete);
+    }
+
+    public boolean onContextItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case EDIT:
+                //TODO: Добавить редактирование контакта
+                break;
+            case CALL: //NOTE: Worked!
+                try {
+                    Intent callIntent = new Intent(Intent.ACTION_CALL);
+                    callIntent.setData(Uri.parse("tel:" + Contacts.get(longClickedItemIndex).getPhone()));
+                    startActivity(callIntent);
+                } catch (ActivityNotFoundException activityException) {
+                    Log.e("Вызов", "Звонок не удался", activityException);
+                }
+                break;
+            case SMS: //NOTE: Worked!
+                try {
+                    Intent smsIntent = new Intent(Intent.ACTION_SENDTO);
+                    smsIntent.setType("vnd.android-dir/mms-sms");
+                    smsIntent.setData(Uri.parse("sms:" + Contacts.get(longClickedItemIndex).getPhone()));
+                    startActivity(smsIntent);
+                }catch (ActivityNotFoundException activityException) {
+                    Log.e("Отправка SMS", "Отправка не удалась", activityException);
+                }
+                break;
+            case EMAIL:
+                try{
+                    //TODO: Add email intent
+                }catch (ActivityNotFoundException activityException) {
+                    Log.e("Отправка почты", "Отправка не удалась", activityException);
+                }
+                break;
+            case MAP:
+                // TODO: Добавить интент поиска на карте
+                break;
+            case DELETE: //NOTE: Worked!
+                dbHandler.deleteContact(Contacts.get(longClickedItemIndex));
+                Contacts.remove(longClickedItemIndex);
+                contactAdapter.notifyDataSetChanged();
+                break;
+        }
+
+        return super.onContextItemSelected(item);
     }
 
     @Override

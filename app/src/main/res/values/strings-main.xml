@@ -20,4 +20,12 @@
     <!--Strings for adding toast popup message-->
     <string name="added_completely"> был(а) добавлен(а) в список контактов</string>
     <string name="already_exist"> уже существует в списке контактов</string>
+
+    <!--Strings for contact listView contextMenu-->
+    <string name="menu_edit">Изменить</string>
+    <string name="menu_delete">Удалить</string>
+    <string name="menu_call">Позвонить</string>
+    <string name="menu_email">Отправить Email</string>
+    <string name="menu_sms">Отправить SMS</string>
+    <string name="menu_map">Найти на карте</string>
 </resources>
