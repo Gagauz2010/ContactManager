@@ -33,7 +33,7 @@ public class Main extends Activity {
 
     List<Contact> Contacts = new ArrayList<Contact>();
 
-    Uri imageURI, defaultURI = Uri.parse("android.resource://univercity.learn/" +  R.drawable.no_profile_image);
+    Uri imageURI = Uri.parse("android.resource://univercity.learn/" +  R.drawable.no_profile_image), defaultURI = Uri.parse("android.resource://univercity.learn/" +  R.drawable.no_profile_image);
 
     DatabaseHandler dbHandler;
 
@@ -57,8 +57,6 @@ public class Main extends Activity {
         addressTxt = (EditText) findViewById(R.id.txtAddress);
         contactListView = (ListView) findViewById(R.id.listView);
         contactImageImgView = (ImageView) findViewById(R.id.imgViewContactImage);
-
-
 
         dbHandler = new DatabaseHandler(getApplicationContext());
 
@@ -84,7 +82,7 @@ public class Main extends Activity {
             public void onClick(View v) {
                 Contact contact = new Contact(dbHandler.getContactsCount(), String.valueOf(nameTxt.getText()), String.valueOf(phoneTxt.getText()), String.valueOf(emailTxt.getText()), String.valueOf(addressTxt.getText()), imageURI);
 
-                if (contactExists(contact)) {
+                if (!contactExists(contact)) {
                     dbHandler.createContact(contact);
                     Contacts.add(contact);
                     contactAdapter.notifyDataSetChanged();
@@ -97,6 +95,8 @@ public class Main extends Activity {
                     imageURI =  defaultURI;
                     contactImageImgView.setImageURI(defaultURI);
                     addBtn.setEnabled(false);
+
+                    return;
                 }
 
                 Toast.makeText(getApplicationContext(), nameTxt.getText().toString() + R.string.already_exist, Toast.LENGTH_SHORT).show();
@@ -160,9 +160,6 @@ public class Main extends Activity {
             if (reqCode == 1) {
                 contactImageImgView.setImageURI(data.getData());
                 imageURI = data.getData();
-                if (imageURI == null){
-                    imageURI = defaultURI;
-                }
             }
         }
     }
@@ -215,7 +212,7 @@ public class Main extends Activity {
     public boolean onContextItemSelected(MenuItem item){
         switch (item.getItemId()){
             case EDIT:
-                //TODO: Добавить редактирование контакта
+                //TODO: Дdd edit contact
                 break;
             case CALL: //NOTE: Worked!
                 try {
@@ -244,7 +241,7 @@ public class Main extends Activity {
                 }
                 break;
             case MAP:
-                // TODO: Добавить интент поиска на карте
+                // TODO: Add geo intent
                 break;
             case DELETE: //NOTE: Worked!
                 dbHandler.deleteContact(Contacts.get(longClickedItemIndex));
