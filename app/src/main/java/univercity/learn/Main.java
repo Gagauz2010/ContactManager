@@ -30,6 +30,7 @@ import java.util.List;
 public class Main extends Activity {
 
     private static final int EDIT = 0, CALL = 1, SMS = 2, EMAIL = 3, MAP = 4, DELETE = 5;
+    private static final String TAG = "ContactManagerActivity";
 
     List<Contact> Contacts = new ArrayList<Contact>();
 
@@ -49,7 +50,11 @@ public class Main extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate(Bundle) called");
         setContentView(R.layout.activity_main);
+
+        //test
+        Log.d("Retrieving Api LVL", String.valueOf(android.os.Build.VERSION.SDK_INT));
 
         nameTxt = (EditText) findViewById(R.id.txtName);
         phoneTxt = (EditText) findViewById(R.id.txtPhone);
@@ -75,7 +80,6 @@ public class Main extends Activity {
         tabSpec.setIndicator("Контакты");
         tabHost.addTab(tabSpec);
 
-
         final Button addBtn = (Button) findViewById(R.id.btnAdd);
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +90,7 @@ public class Main extends Activity {
                     dbHandler.createContact(contact);
                     Contacts.add(contact);
                     contactAdapter.notifyDataSetChanged();
-                    Toast.makeText(getApplicationContext(), nameTxt.getText().toString() + R.string.added_completely, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), nameTxt.getText().toString() + " был(а) добавлен(а) в список контактов", Toast.LENGTH_SHORT).show();
 
                     nameTxt.setText(EMPTY_STRING);
                     phoneTxt.setText(EMPTY_STRING);
@@ -99,7 +103,7 @@ public class Main extends Activity {
                     return;
                 }
 
-                Toast.makeText(getApplicationContext(), nameTxt.getText().toString() + R.string.already_exist, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), nameTxt.getText().toString() + " уже существует в списке контактов", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -212,7 +216,7 @@ public class Main extends Activity {
     public boolean onContextItemSelected(MenuItem item){
         switch (item.getItemId()){
             case EDIT:
-                //TODO: Дdd edit contact
+                //TODO: Implement edit contact
                 break;
             case CALL: //NOTE: Worked!
                 try {
@@ -233,15 +237,17 @@ public class Main extends Activity {
                     Log.e("Отправка SMS", "Отправка не удалась", activityException);
                 }
                 break;
-            case EMAIL:
+            case EMAIL://NOTE: Worked!
                 try{
-                    //TODO: Add email intent
+                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto",Contacts.get(longClickedItemIndex).getEmail(), null));
+                    emailIntent.setType("message/rfc822");
+                    startActivity(Intent.createChooser(emailIntent, "Отправить Email"));
                 }catch (ActivityNotFoundException activityException) {
                     Log.e("Отправка почты", "Отправка не удалась", activityException);
                 }
                 break;
             case MAP:
-                // TODO: Add geo intent
+                // TODO: Implement geo intent
                 break;
             case DELETE: //NOTE: Worked!
                 dbHandler.deleteContact(Contacts.get(longClickedItemIndex));
@@ -267,6 +273,30 @@ public class Main extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         return id == R.id.action_settings || super.onOptionsItemSelected(item);
+    }
 
+    @Override public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart() called");
+    }
+
+    @Override public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause() called");
+    }
+
+    @Override public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume() called");
+    }
+
+    @Override public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop() called");
+    }
+
+    @Override public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy() called");
     }
 }
