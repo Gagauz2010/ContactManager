@@ -205,12 +205,12 @@ public class Main extends Activity {
 
         //menu.setHeaderIcon(R.drawable.edit_icon);
         menu.setHeaderTitle("Опции");
-        menu.add(Menu.NONE, EDIT, menu.NONE, R.string.menu_edit);
-        menu.add(Menu.NONE, CALL, menu.NONE, R.string.menu_call);
-        menu.add(Menu.NONE, SMS, menu.NONE, R.string.menu_sms);
-        menu.add(Menu.NONE, EMAIL, menu.NONE, R.string.menu_email);
-        menu.add(Menu.NONE, MAP, menu.NONE, R.string.menu_map);
-        menu.add(Menu.NONE, DELETE, menu.NONE, R.string.menu_delete);
+        menu.add(Menu.NONE, EDIT, Menu.NONE, R.string.menu_edit);
+        menu.add(Menu.NONE, CALL, Menu.NONE, R.string.menu_call);
+        menu.add(Menu.NONE, SMS, Menu.NONE, R.string.menu_sms);
+        menu.add(Menu.NONE, EMAIL, Menu.NONE, R.string.menu_email);
+        menu.add(Menu.NONE, MAP, Menu.NONE, R.string.menu_map);
+        menu.add(Menu.NONE, DELETE, Menu.NONE, R.string.menu_delete);
     }
 
     public boolean onContextItemSelected(MenuItem item){
